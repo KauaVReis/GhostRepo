@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="EmojiRepo - Oculte repositórios GitHub inteiros e arquivos ZIP atrás de um único emoji visível usando caracteres Unicode invisíveis.">
-  <title>EmojiRepo | Ferramenta Educacional de Esteganografia</title>
+  <meta name="description" content="EMOJIGHOST - Oculte repositórios GitHub inteiros e arquivos ZIP atrás de um único emoji visível usando caracteres Unicode invisíveis.">
+  <title>EMOJIGHOST | Ferramenta Educacional de Esteganografia</title>
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#00ff66">
@@ -14,7 +14,7 @@
 <body>
 
   <header>
-    <h1>EmojiRepo</h1>
+    <h1>EMOJIGHOST</h1>
     <div class="subtitle">// Steganography & Archive Stealing Tool v1.0</div>
     <div style="margin-top: 1rem;">
       <button class="btn" id="btn-download-cli" style="width: auto; display: inline-flex; padding: 0.5rem 1rem; font-size: 0.8rem; border-color: var(--neon-blue); color: var(--neon-blue);">
@@ -35,13 +35,13 @@
 
       <!-- Opção 1: URL do GitHub -->
       <div class="input-group">
-        <label for="github-url">Link do Repositório GitHub (Público)</label>
-        <input type="text" id="github-url" placeholder="https://github.com/usuario/repositorio" autocomplete="off">
+        <label for="github-url">Link do Repositório GitHub (ou usuario/repositorio)</label>
+        <input type="text" id="github-url" placeholder="Ex: KauaVReis/GhostRepo ou a URL completa" autocomplete="off">
       </div>
 
       <!-- Divisor visual -->
       <div style="text-align: center; margin: 1rem 0; color: var(--text-muted); font-size: 0.8rem;">
-        OU FAÇA UPLOAD MANUAL
+        OU FAÇA UPLOAD MANUAL DO ZIP
       </div>
 
       <!-- Opção 2: Drag & Drop de ZIP local -->
@@ -54,7 +54,7 @@
           <input type="file" id="zip-file-input" accept=".zip" style="display: none;">
         </div>
       </div>
-
+ 
       <!-- Opções avançadas -->
       <div class="options-container">
         <div class="options-title">
@@ -125,6 +125,17 @@
         DECODER (Extrair Dados)
       </h2>
 
+      <!-- Opção 1: Paste Textarea -->
+      <div class="input-group">
+        <label for="decode-text-input">Cole o Emoji ou os caracteres invisíveis</label>
+        <textarea id="decode-text-input" placeholder="Cole aqui o emoji copiado (ou os caracteres invisíveis) para restaurar..." autocomplete="off"></textarea>
+      </div>
+
+      <!-- Divisor visual -->
+      <div style="text-align: center; margin: 1rem 0; color: var(--text-muted); font-size: 0.8rem;">
+        OU ENVIE O ARQUIVO TXT
+      </div>
+
       <!-- Drag & Drop de arquivo emoji.txt -->
       <div class="input-group">
         <div class="drop-zone" id="txt-drop-zone">
@@ -184,7 +195,7 @@
       <div class="terminal-header">
         <div class="terminal-title">
           <div class="terminal-dot"></div>
-          <span>EMOJIREPO // TERMINAL DE OPERAÇÕES</span>
+          <span>EMOJIGHOST // TERMINAL DE OPERAÇÕES</span>
         </div>
         <div class="terminal-actions">
           <div class="terminal-btn red" title="Limpar logs" id="btn-clear-logs"></div>
@@ -199,7 +210,7 @@
   </main>
 
   <footer>
-    EmojiRepo — Ferramenta de Esteganografia para fins de pesquisa e aprendizado. Funciona 100% offline. 
+    EMOJIGHOST — Ferramenta de Esteganografia para fins de pesquisa e aprendizado. Funciona 100% offline. 
     Desenvolvido com <a href="#">HTML, CSS & JS Puro</a>.
   </footer>
 

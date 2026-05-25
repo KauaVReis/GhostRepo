@@ -1,6 +1,6 @@
 {
-  "short_name": "EmojiRepo",
-  "name": "EmojiRepo - GitHub Steganography Tool",
+  "short_name": "EMOJIGHOST",
+  "name": "EMOJIGHOST - GitHub Steganography Tool",
   "icons": [
     {
       "src": "data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>😀</text></svg>",

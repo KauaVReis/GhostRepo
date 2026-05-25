@@ -1,5 +1,5 @@
 /**
- * EmojiRepo - JavaScript Core
+ * EMOJIGHOST - JavaScript Core
  * Aplicação estática de esteganografia em caracteres Unicode invisíveis.
  */
 
@@ -53,6 +53,7 @@ const DOM = {
   btnDownloadTxt: document.getElementById('btn-download-txt'),
 
   // Decode
+  decodeTextInput: document.getElementById('decode-text-input'),
   txtDropZone: document.getElementById('txt-drop-zone'),
   txtZoneText: document.getElementById('txt-zone-text'),
   txtFileInput: document.getElementById('txt-file-input'),
@@ -99,7 +100,7 @@ DOM.btnClearLogs.addEventListener('click', () => {
 });
 
 // Log Inicial
-log('EmojiRepo carregado com sucesso. Pronto para operações.', 'success');
+log('EMOJIGHOST carregado com sucesso. Pronto para operações.', 'success');
 log('Sistema operacional offline habilitado via Cache API.', 'info');
 
 /* ==========================================================================
@@ -286,12 +287,25 @@ setupDragAndDrop(DOM.txtDropZone, DOM.txtZoneText, DOM.txtFileInput, (file) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       state.activeInvisiblePayload = e.target.result;
+      DOM.decodeTextInput.value = e.target.result;
       log(`Arquivo de texto carregado para decodificação: ${file.name} (${formatBytes(state.activeInvisiblePayload.length)} caracteres)`, 'info');
       DOM.btnDecode.removeAttribute('disabled');
     };
     reader.readAsText(file);
   } else {
     log('Por favor, envie apenas arquivos .txt com steganografia de emoji!', 'error');
+  }
+});
+
+// Listener para a área de texto do Decoder (Decode via Colagem)
+DOM.decodeTextInput.addEventListener('input', (e) => {
+  const val = e.target.value;
+  if (val.trim().length > 0) {
+    state.activeInvisiblePayload = val;
+    DOM.btnDecode.removeAttribute('disabled');
+  } else {
+    state.activeInvisiblePayload = null;
+    DOM.btnDecode.setAttribute('disabled', 'true');
   }
 });
 
@@ -332,14 +346,25 @@ function setupDragAndDrop(dropZone, zoneText, fileInput, onFileRead) {
 
 async function downloadGithubZip(repoUrl) {
   // Sanitizar e extrair usuário e repositório
-  const cleanUrl = repoUrl.trim().replace(/\/$/, "");
-  const match = cleanUrl.match(/github\.com\/([^\/]+)\/([^\/]+)/);
-  if (!match) {
-    throw new Error('Link do GitHub inválido. Use o formato: https://github.com/usuario/repositorio');
+  let cleanUrl = repoUrl.trim().replace(/\/$/, "");
+  if (cleanUrl.toLowerCase().endsWith('.git')) {
+    cleanUrl = cleanUrl.slice(0, -4);
   }
   
-  const user = match[1];
-  const repo = match[2];
+  let path = cleanUrl;
+  if (cleanUrl.includes('github.com/')) {
+    path = cleanUrl.split('github.com/')[1];
+  } else if (cleanUrl.includes('://')) {
+    path = cleanUrl.split('://')[1];
+  }
+  
+  const pathParts = path.split('/').filter(p => p.length > 0);
+  if (pathParts.length < 2) {
+    throw new Error('Formato do repositório inválido. Use "usuario/repositorio" ou o link completo do GitHub.');
+  }
+  
+  const user = pathParts[0];
+  const repo = pathParts[1];
   state.activeZipName = `${repo}-master.zip`;
   
   log(`Iniciando detecção do repositório ${user}/${repo}...`, 'info');
@@ -452,6 +477,15 @@ DOM.btnCopyEmoji.addEventListener('click', () => {
     navigator.clipboard.writeText(state.activeInvisiblePayload)
       .then(() => {
         log('Payload copiado para a área de transferência!', 'success');
+        const originalText = DOM.btnCopyEmoji.innerHTML;
+        DOM.btnCopyEmoji.innerHTML = 'Copiado! ✓';
+        DOM.btnCopyEmoji.style.borderColor = 'var(--neon-green)';
+        DOM.btnCopyEmoji.style.color = 'var(--neon-green)';
+        setTimeout(() => {
+          DOM.btnCopyEmoji.innerHTML = originalText;
+          DOM.btnCopyEmoji.style.borderColor = 'var(--neon-blue)';
+          DOM.btnCopyEmoji.style.color = 'var(--neon-blue)';
+        }, 2000);
       })
       .catch(err => {
         log('Falha ao copiar payload automaticamente. Copie do arquivo gerado.', 'error');
