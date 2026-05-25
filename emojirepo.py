@@ -13,6 +13,7 @@ import urllib.request
 import argparse
 import zipfile
 import io
+import ssl
 
 # Configurações de Codificação (Compatíveis com JS)
 ANCHOR_EMOJI = "😀"
@@ -113,7 +114,8 @@ def download_github_zip(repo_url: str) -> bytes:
         req = urllib.request.Request(download_url, headers=headers)
 
         try:
-            with urllib.request.urlopen(req) as response:
+            context = ssl._create_unverified_context()
+            with urllib.request.urlopen(req, context=context) as response:
                 if response.status == 200:
                     zip_data = response.read()
                     if len(zip_data) > 100:
