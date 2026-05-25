@@ -1,5 +1,5 @@
-// Service Worker para EmojiRepo - Permite funcionamento offline total
-const CACHE_NAME = 'emojirepo-v1';
+// Service Worker para EMOJIGHOST - Permite funcionamento offline total
+const CACHE_NAME = 'emojighost-v1';
 const ASSETS = [
   './',
   './index.html',
