@@ -5,7 +5,8 @@ const ASSETS = [
   './index.html',
   './style.css',
   './script.js',
-  './manifest.json'
+  './manifest.json',
+  './emojirepo.py.txt'
 ];
 
 // Instalação do Service Worker e Cache de recursos estáticos

@@ -344,35 +344,47 @@ async function downloadGithubZip(repoUrl) {
   
   log(`Iniciando detecção do repositório ${user}/${repo}...`, 'info');
   
-  // Tentar baixar da branch main ou master usando o proxy allOrigins para evitar CORS
   const branches = ['main', 'master'];
+  
+  // Lista de proxies de CORS gratuitos e rápidos para tentar em fallback
+  const proxyTemplates = [
+    url => `https://corsproxy.io/?url=${encodeURIComponent(url)}`,
+    url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+    url => `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(url)}`
+  ];
+  
   let lastError = null;
   
   for (const branch of branches) {
     const downloadUrl = `https://github.com/${user}/${repo}/archive/refs/heads/${branch}.zip`;
-    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(downloadUrl)}`;
     
-    log(`Tentando baixar branch '${branch}'...`, 'info');
-    try {
-      const response = await fetch(proxyUrl);
-      if (!response.ok) {
-        throw new Error(`Servidor respondeu com código ${response.status}`);
-      }
-      const buffer = await response.arrayBuffer();
-      // Se retornou um zip inválido (por exemplo, a resposta de erro do Allorigins ou github formatada)
-      if (buffer.byteLength < 100) {
-        throw new Error("Arquivo muito pequeno. Branch inexistente ou repositório privado.");
-      }
+    // Tenta cada proxy de CORS disponível
+    for (let p = 0; p < proxyTemplates.length; p++) {
+      const proxyUrl = proxyTemplates[p](downloadUrl);
+      log(`Tentando baixar branch '${branch}' via proxy #${p + 1}...`, 'info');
       
-      log(`Sucesso! Branch '${branch}' baixada via proxy CORS.`, 'success');
-      return new Uint8Array(buffer);
-    } catch (err) {
-      log(`Falha ao baixar branch '${branch}': ${err.message}`, 'warn');
-      lastError = err;
+      try {
+        const response = await fetch(proxyUrl);
+        if (!response.ok) {
+          throw new Error(`Código HTTP ${response.status}`);
+        }
+        const buffer = await response.arrayBuffer();
+        
+        // Verifica se a resposta não é uma página HTML de erro curta
+        if (buffer.byteLength < 500) {
+          throw new Error("Arquivo ZIP inválido ou muito curto (possível página de erro).");
+        }
+        
+        log(`Sucesso! Repositório obtido via proxy CORS #${p + 1}.`, 'success');
+        return new Uint8Array(buffer);
+      } catch (err) {
+        log(`Proxy #${p + 1} falhou para branch '${branch}': ${err.message}`, 'warn');
+        lastError = err;
+      }
     }
   }
   
-  throw new Error(`Não foi possível obter o ZIP do repositório. Motivo: ${lastError.message}`);
+  throw new Error(`Não foi possível baixar o repositório por nenhum proxy CORS. Último erro: ${lastError.message}`);
 }
 
 /* ==========================================================================
@@ -534,7 +546,7 @@ function triggerRestoredZipDownload() {
 DOM.btnDownloadCli.addEventListener('click', async () => {
   try {
     log('Iniciando transferência do script Python CLI...', 'info');
-    const response = await fetch('./emojirepo.py');
+    const response = await fetch('./emojirepo.py.txt');
     if (!response.ok) {
       throw new Error(`Código de status ${response.status}`);
     }
